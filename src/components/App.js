@@ -1,32 +1,41 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-
+import axios from 'axios';
 import MovieCard from './MovieCard'
 
 class App extends Component {
   constructor(){
     super();
-    this.state={
-      movies: [
-        {
-          title: 'Harry potter',
-          length: '2 hours and 30min',
-          coverPicture: 'https://images.unsplash.com/photo-1506239015622-cc71326f7239?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=4ad541e4ce0c1ae073c45273770990b6&auto=format&fit=crop&w=1950&q=80',
-          cast : 'Ilias ,Samy',
-          description: 'this is a must watch movie '
-        },
-        {
-          title: 'need for speed',
-          length: '1 hours and 59min',
-          coverPicture: 'https://images.unsplash.com/photo-1516577631679-b146fe527518?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e2fc7c6faa9b9d2249938a6075aab553&auto=format&fit=crop&w=1950&q=80',
-          cast : 'Ilias ,Samy',
-          description: 'If you are looking for a good movie to watch , you cant go wrong with need for speed'
-        }
-      ]
+    this.state= {
+      movies: []
     }
   }
+  componentDidMount() {
+
+    axios.get('https://api.themoviedb.org/3/discover/movie', {
+    params: {
+      api_key: process.env.REACT_APP_API_KEY
+    }
+    })
+
+     .then(response => {
+
+
+      this.setState({
+        movies: response.data.results
+      })
+    })
+     .catch(error => {
+     console.log(error);
+    });
+  }
+
+
+
   render() {
-    const {movies} = this.state;
+    console.log(process.env.NODE_ENV)
+    const {movies} = this.state
+    console.log(this.state.movies)
 
     return (
       <div>
