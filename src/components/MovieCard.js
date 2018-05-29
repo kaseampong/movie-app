@@ -9,31 +9,33 @@ const style = {
       marginLeft: '20px',
   },
   card: {
-    display: 'flex'
+
+    display: 'flex',
+    flexWrap: 'wrap'
   }
 };
 const moviesMap = props.movies.map((movie, i) => {
   return (
     <div key={i} style={style.marginLeft}>
     <Card>
-      <Image src={movie.coverPicture} />
+      <Image src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
       <Card.Content>
         <Card.Header>
           {movie.title}
         </Card.Header>
         <Card.Meta>
           <span className='date'>
-            {movie.cast}
+            {movie.vote_average}
           </span>
         </Card.Meta>
         <Card.Description>
-            {movie.description}
+            {movie.overview}
         </Card.Description>
       </Card.Content>
       <Card.Content extra>
         <a>
           <Icon name='user' />
-          {movie.length}
+          {movie.release_date}
         </a>
       </Card.Content>
     </Card>
