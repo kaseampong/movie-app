@@ -1,4 +1,3 @@
-
 import React, {Component} from 'react'
 import Home from './components/Home';
 import 'semantic-ui-css/semantic.min.css';
@@ -13,16 +12,22 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
+      page: 1,
       movies: []
     }
   }
   componentDidMount() {
-
+    const {page} = this.state 
+    this.fetchMovies(page)
+  }
+  
+  fetchMovies () {
+    const {page, movies} = this.state
     axios.get('https://api.themoviedb.org/3/discover/movie', {
     params: {
 
       api_key: process.env.REACT_APP_API_KEY,
-      page: 4
+      page: page
     }
     })
 
@@ -30,7 +35,9 @@ class App extends Component {
 
 
       this.setState({
-        movies: response.data.results
+        page: page + 1,
+        movies:  [...movies, ...response.data.results]
+        //movies: movies.concat(response.data.results)
       })
     })
      .catch(error => {
@@ -38,12 +45,12 @@ class App extends Component {
     });
   }
 
-
   render() {
+    console.log(this.state.movies)
     return (
     <Router>
     <div>
-      <Route exact path="/" render={() => <Home  movies={this.state.movies} />}/>  
+      <Route exact path="/" render={() => <Home  movies={this.state.movies} fetchMovies={this.fetchMovies.bind(this)}/>}/>  
     </div>
   </Router>
     )
