@@ -1,12 +1,18 @@
-import React, { Component } from 'react';
+
+import React, {Component} from 'react'
+import Home from './components/Home';
 import 'semantic-ui-css/semantic.min.css';
 import axios from 'axios';
-import MovieCard from './MovieCard'
+import {
+  BrowserRouter as Router,
+  Route
+} from 'react-router-dom'
 
 class App extends Component {
+
   constructor(){
     super();
-    this.state= {
+    this.state = {
       movies: []
     }
   }
@@ -14,7 +20,9 @@ class App extends Component {
 
     axios.get('https://api.themoviedb.org/3/discover/movie', {
     params: {
-      api_key: process.env.REACT_APP_API_KEY
+
+      api_key: process.env.REACT_APP_API_KEY,
+      page: 4
     }
     })
 
@@ -31,18 +39,14 @@ class App extends Component {
   }
 
 
-
   render() {
-    console.log(process.env.NODE_ENV)
-    const {movies} = this.state
-    console.log(this.state.movies)
-
     return (
-      <div>
-        <MovieCard  movies={movies}/>
-
-      </div>
-    );
+    <Router>
+    <div>
+      <Route exact path="/" render={() => <Home  movies={this.state.movies} />}/>  
+    </div>
+  </Router>
+    )
   }
 }
 
