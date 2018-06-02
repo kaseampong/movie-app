@@ -15,8 +15,10 @@ const style = {
     flexWrap: 'wrap'
   }
 };
-console.log(props.movies)
-const moviesMap = props.movies.map((movie, i) => {
+const {movies} = props;
+console.log('moviesProps', movies)
+const moviesMap =  movies.length && movies.map((movie, i) => {
+
   return (
     <div key={i} style={style.marginLeft}>
     <Link to={`/movie/${movie.id}`}>
@@ -43,7 +45,9 @@ const moviesMap = props.movies.map((movie, i) => {
     </Link>
   </div>
   )
+  
 })
+
         return(
 
             <div  style={style.card}>

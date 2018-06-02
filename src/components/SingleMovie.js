@@ -35,7 +35,6 @@ class SingleMovie extends Component {
         
       )
   })
-  console.log(mapedTrailers)
   return (
   <div>
   
