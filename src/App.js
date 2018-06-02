@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import Home from './components/Home';
 import 'semantic-ui-css/semantic.min.css';
+import SingleMovie from './components/SingleMovie';
 import axios from 'axios';
 import {
   BrowserRouter as Router,
@@ -12,6 +13,8 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
+      videos: [],
+      singleMovie: {},
       page: 1,
       movies: []
     }
@@ -45,12 +48,56 @@ class App extends Component {
     });
   }
 
+  fetchSingleMovie (id) {
+    axios.get(`https://api.themoviedb.org/3/movie/${id}`, {
+      params: {
+        api_key: process.env.REACT_APP_API_KEY,
+        id: id
+      }
+      })
+       .then(response => {
+        this.setState({
+          singleMovie:  response.data
+        })
+      })
+       .catch(error => {
+       console.log(error);
+      });
+  }
+
+  fetchVideos (id) {
+    console.log('hi');
+    axios.get(`https://api.themoviedb.org/3/movie/${id}/videos`, {
+      params: {
+        api_key: process.env.REACT_APP_API_KEY,
+        id: id
+      }
+      })
+       .then(response => {
+        this.setState({
+          videos:  response.data.results
+        })
+      })
+       .catch(error => {
+       console.log(error);
+      });
+  }
+
   render() {
-    console.log(this.state.movies)
     return (
     <Router>
     <div>
-      <Route exact path="/" render={() => <Home  movies={this.state.movies} fetchMovies={this.fetchMovies.bind(this)}/>}/>  
+      <Route exact path="/" render={() => <Home  movies={this.state.movies} fetchMovies={this.fetchMovies.bind(this)}/>}/>
+      <Route exact path="/movie/:id"  render={(props) => <SingleMovie
+        singleMovie={this.state.singleMovie} 
+        {...props} 
+        fetchSingleMovie={this.fetchSingleMovie.bind(this)}
+        fetchVideos={this.fetchVideos.bind(this)}
+        videos={this.state.videos}
+        />
+
+         }/> 
+      
     </div>
   </Router>
     )
