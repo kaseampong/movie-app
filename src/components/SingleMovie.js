@@ -38,19 +38,21 @@ class SingleMovie extends Component {
   console.log(mapedTrailers)
   return (
   <div>
-    
-    <h1>Single movie page for {id}</h1>
-
-    
+  
     <Grid columns={2}>
-    <Grid.Row stretched>
-    <Grid.Column computer={4} stretched>
+    <Grid.Row >
+    <Grid.Column computer={4} >
         {
         
     poster_path && <Image src={`https://image.tmdb.org/t/p/w500${poster_path}`} size='medium' rounded />
         }
     </Grid.Column>
-    <Grid.Column computer={12} stretched>
+    <Grid.Column computer={12} >
+    <div style={
+      {height: '100vh',
+       overflow: 'scroll'
+      }
+    }>
       <Card fluid>
     <Card.Content>
       <Card.Header>
@@ -72,6 +74,7 @@ class SingleMovie extends Component {
     {release_date}
     </Card.Content>
   </Card>
+  </div>
   </Grid.Column>
   </Grid.Row>
   </Grid>
