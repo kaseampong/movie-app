@@ -7,6 +7,8 @@ import {
   BrowserRouter as Router,
   Route
 } from 'react-router-dom'
+import NavMenu from './components/NavBar';
+
 
 class App extends Component {
 
@@ -16,7 +18,13 @@ class App extends Component {
       videos: [],
       singleMovie: {},
       page: 1,
-      movies: []
+      movies: [],
+      searchValue: '',
+      moviesSearched: [],
+      error: {
+        message: '',
+        isError: false
+      }
     }
   }
   componentDidMount() {
@@ -29,8 +37,10 @@ class App extends Component {
     axios.get('https://api.themoviedb.org/3/discover/movie', {
     params: {
 
+
       api_key: process.env.REACT_APP_API_KEY,
-      page: page
+      page: page,
+      sort_by: 'vote_count.desc'
     }
     })
 
@@ -39,8 +49,13 @@ class App extends Component {
 
       this.setState({
         page: page + 1,
-        movies:  [...movies, ...response.data.results]
-        //movies: movies.concat(response.data.results)
+        movies:  [...movies, ...response.data.results],
+        error: {
+          //movies: movies.concat(response.data.results)
+            message: '',
+            isError: false
+          }
+        
       })
     })
      .catch(error => {
@@ -66,7 +81,6 @@ class App extends Component {
   }
 
   fetchVideos (id) {
-    console.log('hi');
     axios.get(`https://api.themoviedb.org/3/movie/${id}/videos`, {
       params: {
         api_key: process.env.REACT_APP_API_KEY,
@@ -83,11 +97,61 @@ class App extends Component {
       });
   }
 
+
+  searchMovie (value) {
+    if(value.length >= 1) {
+      axios.get('https://api.themoviedb.org/3/search/movie', {
+        params: {
+          api_key: process.env.REACT_APP_API_KEY,
+          query: value
+        }
+        })
+         .then(response => {
+        
+             this.setState({
+               searchValue: value ,
+               moviesSearched: response.data.results
+             })
+           if(response.data.total_results === 0) {
+             this.setState({
+               error: {
+                 message: 'No Movie Found',
+                 isError: true
+               }
+               
+             })
+           } else {
+              this.setState({
+                error: {
+                  message: '',
+                  isError: false,
+                }
+              })
+          }
+        })
+         .catch(error => {
+         console.log('hi', error);
+        });  
+    } else {
+      this.setState({
+        searchValue: '',
+        error: {
+          message: '',
+          isError: false,
+        }
+      })
+    }
+    
+      }
   render() {
+    const {movies, searchValue, moviesSearched, error} = this.state;
+    const moviesDisplayed = searchValue.length <= 1  ? movies : moviesSearched ;
+    console.log('movieDisplayed', moviesDisplayed);
     return (
     <Router>
     <div>
-      <Route exact path="/" render={() => <Home  movies={this.state.movies} fetchMovies={this.fetchMovies.bind(this)}/>}/>
+      <NavMenu searchMovie= {this.searchMovie.bind(this)}/>
+      <Route exact path="/" render={() => <Home  error={error} movies={moviesDisplayed} fetchMovies={this.fetchMovies.bind(this)}/>}/>
       <Route exact path="/movie/:id"  render={(props) => <SingleMovie
         singleMovie={this.state.singleMovie} 
         {...props} 
