@@ -1,6 +1,7 @@
 import React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import { Card, Icon, Image } from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 
 const movieCard = (props) =>  {
 
@@ -14,9 +15,11 @@ const style = {
     flexWrap: 'wrap'
   }
 };
+console.log(props.movies)
 const moviesMap = props.movies.map((movie, i) => {
   return (
     <div key={i} style={style.marginLeft}>
+    <Link to={`/movie/${movie.id}`}>
     <Card>
       <Image src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
       <Card.Content>
@@ -33,12 +36,11 @@ const moviesMap = props.movies.map((movie, i) => {
         </Card.Description>
       </Card.Content>
       <Card.Content extra>
-        <a>
           <Icon name='user' />
           {movie.release_date}
-        </a>
       </Card.Content>
     </Card>
+    </Link>
   </div>
   )
 })
