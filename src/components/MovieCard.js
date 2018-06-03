@@ -16,7 +16,6 @@ const style = {
   }
 };
 const {movies} = props;
-console.log('moviesProps', movies)
 const moviesMap =  movies.length && movies.map((movie, i) => {
 
   return (

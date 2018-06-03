@@ -3,8 +3,7 @@ import MovieCard from './MovieCard';
 import { Button } from 'semantic-ui-react';
 
 const Home = (props) => {
-    const {movies, error} = props
-    console.log(error)
+    const {movies, error} = props;
     const movieNotFound = error.isError ? error.message : null;
     return (
       <div>

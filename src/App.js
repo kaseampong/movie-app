@@ -72,8 +72,9 @@ class App extends Component {
       })
        .then(response => {
         this.setState({
-          singleMovie:  response.data
+          singleMovie:  {...response.data, ...{isAdded: false}}
         })
+        console.log(this.state.singleMovie);
       })
        .catch(error => {
        console.log(error);
@@ -130,7 +131,7 @@ class App extends Component {
           }
         })
          .catch(error => {
-         console.log('hi', error);
+         console.log(error);
         });  
     } else {
       this.setState({
@@ -146,7 +147,6 @@ class App extends Component {
   render() {
     const {movies, searchValue, moviesSearched, error} = this.state;
     const moviesDisplayed = searchValue.length <= 1  ? movies : moviesSearched ;
-    console.log('movieDisplayed', moviesDisplayed);
     return (
     <Router>
     <div>
