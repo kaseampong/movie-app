@@ -1,5 +1,7 @@
 import React, { Component} from 'react';
-import { Image, Card, Grid, Embed } from 'semantic-ui-react'
+import { Image, Card, Grid, Embed, Button } from 'semantic-ui-react'
+import {dataBase} from '../config';
+
 class SingleMovie extends Component {
 
   componentDidMount() {
@@ -8,16 +10,20 @@ class SingleMovie extends Component {
     fetchSingleMovie(id);
     fetchVideos(id);
   }
+
+  addMovieToWatchlist(movie) {
+    dataBase.ref('watchlist/').child(movie.id).set({
+      movie: movie
+    }, function () {
+      console.log('hi')
+    }
+  )
+  }
   render() {
    
   const {id} = this.props.match.params;
   const {poster_path, title, overview, vote_average, release_date } = this.props.singleMovie
-  // const {results} = this.props.videos;
-  // console.log(results)
-  // const filteredTrailers = results.length && results.filter((video) => {
-  //    return video.type === "Trailer"
-  //   })
-  //   console.log(filteredTrailers);
+  const {singleMovie} = this.props;
   const {videos} = this.props;
   const filteredTrailers = videos.length && videos.filter((video)=> {
      return video.type === "Trailer"
@@ -45,6 +51,7 @@ class SingleMovie extends Component {
         
     poster_path && <Image src={`https://image.tmdb.org/t/p/w500${poster_path}`} size='medium' rounded />
         }
+        <Button onClick={() => this.addMovieToWatchlist(singleMovie)}>Add to Watch-list</Button>
     </Grid.Column>
     <Grid.Column computer={12} >
     <div style={
@@ -78,6 +85,7 @@ class SingleMovie extends Component {
   </Grid.Row>
   </Grid>
 
+  
   </div>
   )
 }
