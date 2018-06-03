@@ -29,18 +29,11 @@ class SingleMovie extends Component {
      return video.type === "Trailer"
 
   });
-  const mapedTrailers = filteredTrailers.length && filteredTrailers.map((trailer, i) => {
-      return (
-      <div key={i}>
-        <Embed
-        id= {trailer.key}
-        placeholder='/assets/images/vimeo-example.jpg'
-        source='youtube'
-      />
-      </div>
-        
-      )
-  })
+  const {backdrop_path} = this.props.singleMovie;
+
+  const trailer = filteredTrailers.length && filteredTrailers[0].key;
+console.log('trailer', trailer)
+      
   return (
   <div>
   
@@ -74,7 +67,14 @@ class SingleMovie extends Component {
       </Card.Description>
     </Card.Content>
     <Card.Content>
-    {mapedTrailers}
+    <div>
+        <Embed
+        id= {trailer}
+        placeholder={`https://image.tmdb.org/t/p/original${backdrop_path}`}
+        
+        source='youtube'
+      />
+      </div>
   </Card.Content>
     <Card.Content extra>
     {release_date}
