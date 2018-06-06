@@ -8,6 +8,8 @@ import {
   Route
 } from 'react-router-dom'
 import NavMenu from './components/NavBar';
+import Watchlist from './components/WatchList';
+import {dataBase} from './config';
 
 
 class App extends Component {
@@ -24,14 +26,16 @@ class App extends Component {
       error: {
         message: '',
         isError: false
-      }
+      },
+      watchlist: []
     }
   }
   componentDidMount() {
     const {page} = this.state 
     this.fetchMovies(page)
+    this.getWatchListMovies()
   }
-  
+ 
   fetchMovies () {
     const {page, movies} = this.state
     axios.get('https://api.themoviedb.org/3/discover/movie', {
@@ -67,14 +71,14 @@ class App extends Component {
     axios.get(`https://api.themoviedb.org/3/movie/${id}`, {
       params: {
         api_key: process.env.REACT_APP_API_KEY,
-        id: id
+        id: id,
+        append_to_response: 'images'
       }
       })
        .then(response => {
         this.setState({
           singleMovie:  {...response.data, ...{isAdded: false}}
         })
-        console.log(this.state.singleMovie);
       })
        .catch(error => {
        console.log(error);
@@ -98,6 +102,39 @@ class App extends Component {
       });
   }
 
+
+
+  addMovieToWatchlist(movie) {
+    dataBase.ref('watchlist/').child(movie.id).set({
+      movie: movie
+    },  () => {
+      this.getWatchListMovies()
+    }
+  )
+  }
+  getWatchListMovies() {
+    dataBase.ref('watchlist').once('value')
+      .then((snapshot) => {
+        if(snapshot.val() !== null) {
+
+          const watchArray = Object.values(snapshot.val())
+          this.setState({
+             watchlist: watchArray
+          })
+        } else {
+          this.setState({
+            watchlist: []
+          })
+        }
+    });
+  }
+
+  deleteWatchlistMovie(id) {
+    dataBase.ref('watchlist').child(id).remove()
+    .then(() => {
+      this.getWatchListMovies()
+    })
+  }
 
   searchMovie (value) {
     if(value.length >= 1) {
@@ -150,7 +187,9 @@ class App extends Component {
     return (
     <Router>
     <div>
-      <NavMenu searchMovie= {this.searchMovie.bind(this)}/>
+      <NavMenu 
+      watchlist={this.state.watchlist}
+      searchMovie= {this.searchMovie.bind(this)}/>
       <Route exact path="/" render={() => <Home  error={error} movies={moviesDisplayed} fetchMovies={this.fetchMovies.bind(this)}/>}/>
       <Route exact path="/movie/:id"  render={(props) => <SingleMovie
         singleMovie={this.state.singleMovie} 
@@ -158,9 +197,15 @@ class App extends Component {
         fetchSingleMovie={this.fetchSingleMovie.bind(this)}
         fetchVideos={this.fetchVideos.bind(this)}
         videos={this.state.videos}
+        addMovieToWatchlist = {this.addMovieToWatchlist.bind(this)}
         />
-
-         }/> 
+       }/> 
+       <Route exact path="/watchlist" render={() => <Watchlist 
+        getWatchListMovies={this.getWatchListMovies.bind(this)}
+        watchlist={this.state.watchlist}
+        deleteWatchlistMovie={this.deleteWatchlistMovie.bind(this)}
+        />
+       }/>
       
     </div>
   </Router>

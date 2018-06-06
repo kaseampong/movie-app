@@ -11,36 +11,20 @@ class SingleMovie extends Component {
     fetchVideos(id);
   }
 
-  addMovieToWatchlist(movie) {
-    dataBase.ref('watchlist/').child(movie.id).set({
-      movie: movie
-    }, function () {
-      console.log('hi')
-    }
-  )
-  }
   render() {
    
   const {id} = this.props.match.params;
   const {poster_path, title, overview, vote_average, release_date } = this.props.singleMovie
-  const {singleMovie} = this.props;
+  const {singleMovie, addMovieToWatchlist} = this.props;
   const {videos} = this.props;
   const filteredTrailers = videos.length && videos.filter((video)=> {
      return video.type === "Trailer"
 
   });
-  const mapedTrailers = filteredTrailers.length && filteredTrailers.map((trailer, i) => {
-      return (
-      <div key={i}>
-        <Embed
-        id= {trailer.key}
-        placeholder='/assets/images/vimeo-example.jpg'
-        source='youtube'
-      />
-      </div>
-        
-      )
-  })
+  const {backdrop_path} = this.props.singleMovie;
+
+  const trailer = filteredTrailers.length && filteredTrailers[0].key;
+      
   return (
   <div>
   
@@ -51,7 +35,7 @@ class SingleMovie extends Component {
         
     poster_path && <Image src={`https://image.tmdb.org/t/p/w500${poster_path}`} size='medium' rounded />
         }
-        <Button onClick={() => this.addMovieToWatchlist(singleMovie)}>Add to Watch-list</Button>
+        <Button onClick={() => addMovieToWatchlist(singleMovie)}>Add to Watch-list</Button>
     </Grid.Column>
     <Grid.Column computer={12} >
     <div style={
@@ -74,7 +58,14 @@ class SingleMovie extends Component {
       </Card.Description>
     </Card.Content>
     <Card.Content>
-    {mapedTrailers}
+    <div>
+        <Embed
+        id= {trailer}
+        placeholder={`https://image.tmdb.org/t/p/original${backdrop_path}`}
+        
+        source='youtube'
+      />
+      </div>
   </Card.Content>
     <Card.Content extra>
     {release_date}
