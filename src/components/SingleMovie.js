@@ -11,19 +11,11 @@ class SingleMovie extends Component {
     fetchVideos(id);
   }
 
-  addMovieToWatchlist(movie) {
-    dataBase.ref('watchlist/').child(movie.id).set({
-      movie: movie
-    }, function () {
-      console.log('hi')
-    }
-  )
-  }
   render() {
    
   const {id} = this.props.match.params;
   const {poster_path, title, overview, vote_average, release_date } = this.props.singleMovie
-  const {singleMovie} = this.props;
+  const {singleMovie, addMovieToWatchlist} = this.props;
   const {videos} = this.props;
   const filteredTrailers = videos.length && videos.filter((video)=> {
      return video.type === "Trailer"
@@ -32,7 +24,6 @@ class SingleMovie extends Component {
   const {backdrop_path} = this.props.singleMovie;
 
   const trailer = filteredTrailers.length && filteredTrailers[0].key;
-console.log('trailer', trailer)
       
   return (
   <div>
@@ -44,7 +35,7 @@ console.log('trailer', trailer)
         
     poster_path && <Image src={`https://image.tmdb.org/t/p/w500${poster_path}`} size='medium' rounded />
         }
-        <Button onClick={() => this.addMovieToWatchlist(singleMovie)}>Add to Watch-list</Button>
+        <Button onClick={() => addMovieToWatchlist(singleMovie)}>Add to Watch-list</Button>
     </Grid.Column>
     <Grid.Column computer={12} >
     <div style={

@@ -2,11 +2,6 @@ import React, {Component} from 'react';
 import { Card, Icon, Image, Button } from 'semantic-ui-react';
 
 class Watchlist extends Component {  
-  componentDidMount() {
-    const {getWatchListMovies} = this.props;
-    getWatchListMovies()
-}
-
 render(){
   const {watchlist, deleteWatchlistMovie} = this.props
   const myFavMovies = watchlist.length &&  watchlist.map(movie =>  {

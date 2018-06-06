@@ -33,8 +33,9 @@ class App extends Component {
   componentDidMount() {
     const {page} = this.state 
     this.fetchMovies(page)
+    this.getWatchListMovies()
   }
-  
+ 
   fetchMovies () {
     const {page, movies} = this.state
     axios.get('https://api.themoviedb.org/3/discover/movie', {
@@ -78,7 +79,6 @@ class App extends Component {
         this.setState({
           singleMovie:  {...response.data, ...{isAdded: false}}
         })
-        console.log(this.state.singleMovie);
       })
        .catch(error => {
        console.log(error);
@@ -103,6 +103,15 @@ class App extends Component {
   }
 
 
+
+  addMovieToWatchlist(movie) {
+    dataBase.ref('watchlist/').child(movie.id).set({
+      movie: movie
+    },  () => {
+      this.getWatchListMovies()
+    }
+  )
+  }
   getWatchListMovies() {
     dataBase.ref('watchlist').once('value')
       .then((snapshot) => {
@@ -188,6 +197,7 @@ class App extends Component {
         fetchSingleMovie={this.fetchSingleMovie.bind(this)}
         fetchVideos={this.fetchVideos.bind(this)}
         videos={this.state.videos}
+        addMovieToWatchlist = {this.addMovieToWatchlist.bind(this)}
         />
        }/> 
        <Route exact path="/watchlist" render={() => <Watchlist 
