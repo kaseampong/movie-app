@@ -5,11 +5,16 @@ import SingleMovie from './components/SingleMovie';
 import axios from 'axios';
 import {
   BrowserRouter as Router,
-  Route
+  Route,
+  Redirect,
+  Switch
 } from 'react-router-dom'
 import NavMenu from './components/NavBar';
 import Watchlist from './components/WatchList';
-import {dataBase} from './config';
+import {dataBase, Auth} from './config';
+import Signup from './components/Signup';
+import LogIn from './components/SignIn';
+import {signUpUser, signInUser} from './components/Helpers';
 
 
 class App extends Component {
@@ -27,13 +32,41 @@ class App extends Component {
         message: '',
         isError: false
       },
-      watchlist: []
+      watchlist: [],
+      isAuth: false,
+      user: {}
     }
   }
   componentDidMount() {
     const {page} = this.state 
     this.fetchMovies(page)
     this.getWatchListMovies()
+    Auth().onAuthStateChanged((user) => {
+      if (user) {
+
+        this.setState({
+          isAuth: true,
+          user: user
+        })
+        this.getWatchListMovies()
+      } else {
+        this.setState({
+          isAuth: false
+        })
+      }
+    });
+  }
+
+ componentWillUnmount() {
+   console.log('dead')
+ }
+
+  handleSignOut () {
+    Auth().signOut().then(() => {
+      console.log('Signed Out');
+    }, (error) => {
+      console.error('Sign Out Error', error);
+    });
   }
  
   fetchMovies () {
@@ -102,10 +135,10 @@ class App extends Component {
       });
   }
 
-
-
+ 
   addMovieToWatchlist(movie) {
-    dataBase.ref('watchlist/').child(movie.id).set({
+    const {uid} = this.state.user
+    dataBase.ref(`/users/${uid}/watchlist/`).child(movie.id).set({
       movie: movie
     },  () => {
       this.getWatchListMovies()
@@ -113,7 +146,8 @@ class App extends Component {
   )
   }
   getWatchListMovies() {
-    dataBase.ref('watchlist').once('value')
+    const {uid} = this.state.user
+    dataBase.ref(`/users/${uid}/watchlist/`).once('value')
       .then((snapshot) => {
         if(snapshot.val() !== null) {
 
@@ -130,7 +164,8 @@ class App extends Component {
   }
 
   deleteWatchlistMovie(id) {
-    dataBase.ref('watchlist').child(id).remove()
+    const {uid} = this.state.user
+        dataBase.ref(`/users/${uid}/watchlist/`).child(id).remove()
     .then(() => {
       this.getWatchListMovies()
     })
@@ -188,29 +223,109 @@ class App extends Component {
     <Router>
     <div>
       <NavMenu 
+      auth={this.state.isAuth}
+      handleSignOut={this.handleSignOut.bind(this)}
       watchlist={this.state.watchlist}
-      searchMovie= {this.searchMovie.bind(this)}/>
-      <Route exact path="/" render={() => <Home  error={error} movies={moviesDisplayed} fetchMovies={this.fetchMovies.bind(this)}/>}/>
-      <Route exact path="/movie/:id"  render={(props) => <SingleMovie
+      searchMovie= {this.searchMovie.bind(this)}
+      />
+
+    <Switch>
+     <PrivateRoute
+       exact 
+       path="/"
+       component= {Home}
+       auth={this.state.isAuth}
+       error={error}
+       movies={moviesDisplayed} 
+       fetchMovies={this.fetchMovies.bind(this)}
+      />
+      <PrivateRoute 
+        exact
+        path="/movie/:id" 
+        auth={this.state.isAuth}
+        component={SingleMovie}
         singleMovie={this.state.singleMovie} 
-        {...props} 
         fetchSingleMovie={this.fetchSingleMovie.bind(this)}
         fetchVideos={this.fetchVideos.bind(this)}
         videos={this.state.videos}
         addMovieToWatchlist = {this.addMovieToWatchlist.bind(this)}
-        />
-       }/> 
-       <Route exact path="/watchlist" render={() => <Watchlist 
+      />
+       
+      <PrivateRoute 
+        exact 
+        path="/watchlist" 
+        auth={this.state.isAuth}
+        component= {Watchlist}
         getWatchListMovies={this.getWatchListMovies.bind(this)}
         watchlist={this.state.watchlist}
         deleteWatchlistMovie={this.deleteWatchlistMovie.bind(this)}
-        />
-       }/>
-      
+      />
+       <PublicRoute
+        exact
+         path="/signup" 
+         auth={this.state.isAuth}
+         component={Signup}
+       /> 
+       <PublicRoute 
+           exact
+           path="/login" 
+           auth={this.state.isAuth}
+           component={LogIn} 
+       /> 
+       <Route render={()=><h1>Page Not Found</h1>} />
+      </Switch>
     </div>
   </Router>
     )
   }
 }
+
+const PrivateRoute = ({ component: Component, auth, exact, path, ...rest }) => (
+  <Route
+   {...rest}
+    exact = {exact}
+    path = {path}
+    render={props =>
+      auth ? (
+        <Component {...props} {...rest} />
+      ) : (
+        <Redirect
+          to={{
+            pathname: "/login",
+            state: { from: props.location }
+          }}
+        />
+      )
+    }
+  />
+);
+
+class PublicRoute  extends Component {
+   
+    render() {
+      const { component: Component, auth, exact, path, ...rest} = this.props
+      return (
+  <Route
+  {...rest}
+    exact = {exact}
+    path = {path}
+    render={props =>
+      !auth ? (
+        <Component {...props} {...rest} 
+       
+        />
+      ) : (
+        <Redirect
+          to={{
+            pathname: "/",
+            state: { from: props.location }
+          }}
+        />
+      )
+    }
+  />
+  )
+}
+};
 
 export default App;
