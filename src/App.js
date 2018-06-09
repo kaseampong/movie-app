@@ -14,7 +14,7 @@ import Watchlist from './components/WatchList';
 import {dataBase, Auth} from './config';
 import Signup from './components/Signup';
 import LogIn from './components/SignIn';
-import {signUpUser, signInUser} from './components/Helpers';
+
 
 
 class App extends Component {
@@ -40,10 +40,9 @@ class App extends Component {
   componentDidMount() {
     const {page} = this.state 
     this.fetchMovies(page)
-    this.getWatchListMovies()
     Auth().onAuthStateChanged((user) => {
       if (user) {
-
+        this.getWatchListMovies()
         this.setState({
           isAuth: true,
           user: user

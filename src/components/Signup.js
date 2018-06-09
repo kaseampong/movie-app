@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Input, Button, Form } from 'semantic-ui-react'
+import {Button} from 'semantic-ui-react'
 import {signUpUser} from './Helpers';
 
  class signupForm extends Component {
@@ -16,13 +16,25 @@ import {signUpUser} from './Helpers';
     return (
       <div>
         <form onSubmit={this.handleSignupSubmit}>
+        <div style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+        <div className='ui input'>
         <input ref={(email) => this.email = email}
         type='email'  placeholder='e.g example@gmail.com'/>
+        </div>
         <br/>
+        <div className='ui input'>
         <input ref={(password) => this.password = password}
         type='password' placeholder='*****' />
-        <br/> 
+        </div> 
+        <br/>
         <Button onClick={this.handleSubmit}>Sign Up</Button>
+        </div>
         </form>
       </div>
     )
