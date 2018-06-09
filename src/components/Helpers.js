@@ -1,14 +1,22 @@
 import {Auth, dataBase} from '../config';
 
 
-function saveUserData (user) {
-  dataBase.ref('/users').child(user.user.uid).set({
-    email: user.user.email,
+export function signUpUser(email, password, displayName) {
+  return Auth().createUserWithEmailAndPassword(email, password)
+  .then((user) => {
+    Auth().currentUser.updateProfile({
+      displayName,
+      photoURL: "https://cdn.vectoricons.net/wp-content/themes/checkout-child/images/me-as-icon-with-glass-transparent.png"
+    })
+    .then(() => {
+      dataBase.ref('/users').child(user.user.uid).set({
+        email: user.user.email,
+        displayName: user.user.displayName,
+        photoURL: user.user.photoURL
+      })
+    })
   })
 }
-export function signUpUser(email, password) {
-  return Auth().createUserWithEmailAndPassword(email, password).then(saveUserData)
-  }
 
 export function signInUser(email, password) {
   return  Auth().signInWithEmailAndPassword(email, password)

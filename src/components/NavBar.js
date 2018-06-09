@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Input, Menu, Button } from 'semantic-ui-react';
+import { Input, Menu, Button, Header, Image } from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
+
 
 
 
@@ -8,7 +9,7 @@ class NavMenu extends Component {
  
   render() {
 
-    const {searchMovie, watchlist, handleSignOut, auth} = this.props;
+    const {searchMovie, watchlist, handleSignOut, auth, user} = this.props;
     return (
       
       <Menu  color={'red'}>
@@ -29,10 +30,18 @@ class NavMenu extends Component {
             icon='search'
              placeholder='Search...' />
           </Menu.Item>
+        } 
+        { auth &&
+          <Menu.Item>
+            <Link to={'/userprofile'}>
+             <Header as='h5'>
+               <Image size='mini' circular src={user.photoURL} />
+                 {' '}{user.displayName}
+             </Header>
+           </Link>
+          </Menu.Item>
         }
           <Menu.Item>
-           
-               <Menu.Item> 
                  { auth ?
                  <Button onClick={handleSignOut}>
                     Sign Out
@@ -41,9 +50,6 @@ class NavMenu extends Component {
                      Sign Up
                    </Link>
                  }
-               </Menu.Item>
-
-            
           </Menu.Item>
           
         </Menu.Menu>

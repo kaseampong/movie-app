@@ -9,7 +9,7 @@ import {signUpUser} from './Helpers';
    }
   handleSignupSubmit (e) { 
     e.preventDefault();
-    signUpUser(this.email.value, this.password.value)
+    signUpUser(this.email.value, this.password.value, this.name.value)
   }
    
   render() {
@@ -23,6 +23,10 @@ import {signUpUser} from './Helpers';
           alignItems: 'center',
           justifyContent: 'center'
         }}>
+         <div className='ui input'>
+        <input ref={(name) => this.name = name}
+        type='text'  placeholder='e.g john alex'/>
+        </div>
         <div className='ui input'>
         <input ref={(email) => this.email = email}
         type='email'  placeholder='e.g example@gmail.com'/>

@@ -14,6 +14,7 @@ import Watchlist from './components/WatchList';
 import {dataBase, Auth} from './config';
 import Signup from './components/Signup';
 import LogIn from './components/SignIn';
+import UserProfile from './components/UserProfile';
 
 
 
@@ -42,6 +43,7 @@ class App extends Component {
     this.fetchMovies(page)
     Auth().onAuthStateChanged((user) => {
       if (user) {
+        console.log(user)
         this.getWatchListMovies()
         this.setState({
           isAuth: true,
@@ -222,12 +224,13 @@ class App extends Component {
     <Router>
     <div>
       <NavMenu 
+      user={this.state.user}
       auth={this.state.isAuth}
       handleSignOut={this.handleSignOut.bind(this)}
       watchlist={this.state.watchlist}
       searchMovie= {this.searchMovie.bind(this)}
       />
-
+    
     <Switch>
      <PrivateRoute
        exact 
@@ -237,6 +240,13 @@ class App extends Component {
        error={error}
        movies={moviesDisplayed} 
        fetchMovies={this.fetchMovies.bind(this)}
+      />
+      <PrivateRoute
+       exact
+       path="/userprofile"
+       component={UserProfile}
+       auth={this.state.isAuth}
+       user={this.state.user}
       />
       <PrivateRoute 
         exact
