@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Card, Icon, Image, Button } from 'semantic-ui-react';
+import { Card, Image, Button } from 'semantic-ui-react';
 
 class Watchlist extends Component {  
 render(){

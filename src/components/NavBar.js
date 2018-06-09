@@ -9,7 +9,6 @@ class NavMenu extends Component {
   render() {
 
     const {searchMovie, watchlist, handleSignOut, auth} = this.props;
-    console.log(handleSignOut)
     return (
       
       <Menu  color={'red'}>

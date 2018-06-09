@@ -1,6 +1,5 @@
 import React, { Component} from 'react';
 import { Image, Card, Grid, Embed, Button } from 'semantic-ui-react'
-import {dataBase} from '../config';
 
 class SingleMovie extends Component {
 
@@ -12,8 +11,6 @@ class SingleMovie extends Component {
   }
 
   render() {
-   
-  const {id} = this.props.match.params;
   const {poster_path, title, overview, vote_average, release_date } = this.props.singleMovie
   const {singleMovie, addMovieToWatchlist} = this.props;
   const {videos} = this.props;
